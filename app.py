@@ -14,8 +14,9 @@ class Issue(db.Model):
     title = db.Column(db.String(100))
     description = db.Column(db.String(200))
     location = db.Column(db.String(100))
+    status = db.Column(db.String(20), default="Pending")  # New column for status
 
-# Home page → form + issues list
+# Home page → form + list issues
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
@@ -31,6 +32,14 @@ def index():
 
     issues = Issue.query.all()  # fetch all issues from DB
     return render_template("index.html", issues=issues)
+
+# Route to resolve issue
+@app.route("/resolve/<int:issue_id>")
+def resolve_issue(issue_id):
+    issue = Issue.query.get_or_404(issue_id)
+    issue.status = "Resolved"
+    db.session.commit()
+    return redirect(url_for("index"))
 
 if __name__ == "__main__":
     with app.app_context():

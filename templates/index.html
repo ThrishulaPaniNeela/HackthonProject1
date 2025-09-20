@@ -15,7 +15,13 @@
     <h2>All Reported Issues</h2>
     <ul>
         {% for issue in issues %}
-            <li><b>{{ issue.title }}</b> - {{ issue.description }} ({{ issue.location }})</li>
+            <li>
+                <b>{{ issue.title }}</b> - {{ issue.description }} ({{ issue.location }})  
+                <br>Status: {{ issue.status }}
+                {% if issue.status == "Pending" %}
+                    | <a href="/resolve/{{ issue.id }}">Mark as Resolved</a>
+                {% endif %}
+            </li>
         {% endfor %}
     </ul>
 </body>
