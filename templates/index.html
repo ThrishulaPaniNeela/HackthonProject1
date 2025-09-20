@@ -2,27 +2,70 @@
 <html>
 <head>
     <title>Civic Issue Reporting</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </head>
 <body>
     <h1>Report an Issue</h1>
     <form method="POST">
         Title: <input type="text" name="title" required><br><br>
         Description: <textarea name="description" required></textarea><br><br>
-        Location: <input type="text" name="location" required><br><br>
+        Location (lat,lng): <input type="text" name="location" id="location" required><br><br>
+        <div id="map" style="width:600px; height:400px;"></div><br>
         <input type="submit" value="Submit">
     </form>
 
-    <h2>All Reported Issues</h2>
+    {% if user.is_authenticated %}
+    <a href="/logout">Logout</a>
+{% else %}
+    <a href="/login">Admin Login</a>
+{% endif %}
+
+<h2>All Reported Issues</h2>
+<ul>
+    {% for issue in issues %}
+        <li>
+            <b>{{ issue.title }}</b> - {{ issue.description }}
+            <br>📍 Location: {{ issue.location }}
+            <br>Status: {{ issue.status }}
+            {% if user.is_authenticated and issue.status == "Pending" %}
+                | <a href="/resolve/{{ issue.id }}">Mark as Resolved</a>
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>
+
+    <!-- <h2>All Reported Issues</h2>
     <ul>
         {% for issue in issues %}
             <li>
-                <b>{{ issue.title }}</b> - {{ issue.description }} ({{ issue.location }})  
+                <b>{{ issue.title }}</b> - {{ issue.description }}
+                <br>📍 Location: {{ issue.location }}
                 <br>Status: {{ issue.status }}
                 {% if issue.status == "Pending" %}
                     | <a href="/resolve/{{ issue.id }}">Mark as Resolved</a>
                 {% endif %}
             </li>
         {% endfor %}
-    </ul>
+    </ul> -->
+
+    <script>
+        // Initialize map
+        var map = L.map('map').setView([20.5937, 78.9629], 5); // Center on India
+
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+        }).addTo(map);
+
+        // Add draggable marker
+        var marker = L.marker([20.5937, 78.9629], {draggable:true}).addTo(map);
+
+        marker.on('dragend', function (e) {
+            var lat = marker.getLatLng().lat.toFixed(5);
+            var lng = marker.getLatLng().lng.toFixed(5);
+            document.getElementById('location').value = lat + "," + lng;
+        });
+    </script>
 </body>
 </html>
