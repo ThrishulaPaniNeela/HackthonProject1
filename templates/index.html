@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Civic Issue Reporting</title>
+</head>
+<body>
+  <h2>Report a Civic Issue</h2>
+  <form method="POST" action="/submit">
+    <label>Title:</label><br>
+    <input type="text" name="title" required><br><br>
+
+    <label>Description:</label><br>
+    <textarea name="description" required></textarea><br><br>
+
+    <label>Location:</label><br>
+    <input type="text" name="location" required><br><br>
+
+    <button type="submit">Submit Issue</button>
+  </form>
+</body>
+</html>
