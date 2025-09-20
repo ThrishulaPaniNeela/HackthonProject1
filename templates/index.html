@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Civic Issue Reporting</title>
+    <title>Civic Issue Reporting</title>
 </head>
 <body>
-  <h2>Report a Civic Issue</h2>
-  <form method="POST" action="/submit">
-    <label>Title:</label><br>
-    <input type="text" name="title" required><br><br>
+    <h1>Report an Issue</h1>
+    <form method="POST">
+        Title: <input type="text" name="title" required><br><br>
+        Description: <textarea name="description" required></textarea><br><br>
+        Location: <input type="text" name="location" required><br><br>
+        <input type="submit" value="Submit">
+    </form>
 
-    <label>Description:</label><br>
-    <textarea name="description" required></textarea><br><br>
-
-    <label>Location:</label><br>
-    <input type="text" name="location" required><br><br>
-
-    <button type="submit">Submit Issue</button>
-  </form>
+    <h2>All Reported Issues</h2>
+    <ul>
+        {% for issue in issues %}
+            <li><b>{{ issue.title }}</b> - {{ issue.description }} ({{ issue.location }})</li>
+        {% endfor %}
+    </ul>
 </body>
 </html>
