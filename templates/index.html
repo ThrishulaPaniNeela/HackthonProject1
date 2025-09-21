@@ -3,23 +3,16 @@
 <head>
     <title>Civic Issue Reporting</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-
-    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-
-    <style>
-        #map { height: 400px; }
-    </style>
+    <style>#map { height: 400px; }</style>
 </head>
 <body class="bg-light">
-
 <div class="container mt-5">
     <h1 class="text-center mb-4">Civic Issue Reporting</h1>
 
-    <!-- Report Form -->
     <div class="card p-4 mb-4 shadow">
         <h4>Report a New Issue</h4>
-        <form method="POST">
+        <form method="POST" enctype="multipart/form-data">
             <div class="mb-3">
                 <label class="form-label">Title</label>
                 <input type="text" name="title" class="form-control" required>
@@ -32,25 +25,21 @@
                 <label class="form-label">Location (Click on map)</label>
                 <input type="text" id="location" name="location" class="form-control" readonly required>
             </div>
-
-            <!-- Map -->
+            <div class="mb-3">
+                <label class="form-label">Upload Photo (optional)</label>
+                <input type="file" name="photo" class="form-control" accept="image/*">
+            </div>
             <div id="map" class="mb-3"></div>
-
             <button type="submit" class="btn btn-primary">Submit Issue</button>
         </form>
     </div>
 
-    <!-- Issues List -->
     <div class="card p-4 shadow">
         <h4>All Reported Issues</h4>
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Title</th>
-                    <th>Description</th>
-                    <th>Location</th>
-                    <th>Status</th>
+                    <th>ID</th><th>Title</th><th>Description</th><th>Location</th><th>Photo</th><th>Status</th>
                 </tr>
             </thead>
             <tbody>
@@ -60,6 +49,11 @@
                     <td>{{ issue.title }}</td>
                     <td>{{ issue.description }}</td>
                     <td>{{ issue.location }}</td>
+                    <td>
+                        {% if issue.photo %}
+                            <img src="{{ url_for('static', filename='uploads/' ~ issue.photo) }}?{{ issue.id }}" width="100">
+                        {% else %}No photo{% endif %}
+                    </td>
                     <td>
                         {% if issue.status == "Resolved" %}
                             <span class="badge bg-success">Resolved</span>
@@ -73,9 +67,8 @@
         </table>
     </div>
 
-    <!-- Bottom buttons -->
     <div class="text-center mt-4">
-        {% if user.is_authenticated %}
+        {% if user %}
             <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">Go to Admin Dashboard</a>
             <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
         {% else %}
@@ -84,39 +77,18 @@
     </div>
 </div>
 
-<!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
 <script>
-    // Initialize map (Jharkhand center)
     var map = L.map('map').setView([23.6102, 85.2799], 12);
-
-    // Add OpenStreetMap tiles
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
     var marker;
-
-    // Handle map click event
-    map.on('click', function(e) {
+    map.on('click', function(e){
         var lat = e.latlng.lat.toFixed(6);
         var lng = e.latlng.lng.toFixed(6);
-        var latlngStr = lat + ", " + lng;
-
-        // Fill the location input
-        document.getElementById("location").value = latlngStr;
-
-        // Remove old marker if exists
-        if (marker) {
-            map.removeLayer(marker);
-        }
-
-        // Place new marker
-        marker = L.marker([lat, lng]).addTo(map)
-            .bindPopup("Selected Location: " + latlngStr).openPopup();
+        document.getElementById("location").value = lat + ", " + lng;
+        if(marker) { map.removeLayer(marker); }
+        marker = L.marker([lat, lng]).addTo(map).bindPopup("Selected Location: " + lat + ", " + lng).openPopup();
     });
 </script>
-
 </body>
 </html>
