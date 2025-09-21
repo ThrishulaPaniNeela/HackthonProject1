@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All Reported Issues - CivicsIssueWeb</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        body { background: #f2f6f8; }
+        #issuesMap { height: 80vh; margin-top: 20px; border-radius: 15px; }
+        .btn-nav { margin: 5px; }
+        .leaflet-popup-content img { max-width: 100px; border-radius: 8px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 class="text-center">🗺️ All Reported Issues</h1>
+
+    <!-- Navigation -->
+    <div class="text-center my-3">
+        <a href="{{ url_for('welcome') }}" class="btn btn-secondary btn-nav">🏠 Home</a>
+        <a href="{{ url_for('login') }}" class="btn btn-danger btn-nav">🔑 Admin Login</a>
+        <a href="{{ url_for('report') }}" class="btn btn-primary btn-nav">📝 Report an Issue</a>
+    </div>
+
+    <!-- Map -->
+    <div id="issuesMap"></div>
+</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+    var map = L.map('issuesMap').setView([23.6102, 85.2799], 7);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    var issues = {{ issues|tojson }};
+    issues.forEach(function(issue){
+        if(issue.location){
+            var coords = issue.location.split(",");
+            if(coords.length==2){
+                var lat = parseFloat(coords[0]);
+                var lng = parseFloat(coords[1]);
+                if(!isNaN(lat) && !isNaN(lng)){
+                    var popup = "<b>"+issue.title+"</b><br>"+issue.description+"<br>Status: "+issue.status;
+                    if(issue.photo){ popup += "<br><img src='/static/uploads/"+issue.photo+"' width='100'>"; }
+                    L.marker([lat,lng]).addTo(map).bindPopup(popup);
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>

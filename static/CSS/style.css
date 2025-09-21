@@ -1,0 +1,165 @@
+/* ---------------- General Body ---------------- */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to right, #f2f6f8, #e0f7fa);
+    color: #1e3d59;
+    margin: 0;
+    padding: 0;
+}
+
+/* ---------------- Headings ---------------- */
+h1, h2, h3, h4 {
+    color: #1e3d59;
+    font-weight: bold;
+}
+
+h1 span, h2 span {
+    color: #f76c6c;
+}
+
+/* ---------------- Container ---------------- */
+.container {
+    max-width: 1000px;
+    margin: auto;
+    padding: 20px;
+}
+
+/* ---------------- Welcome Text ---------------- */
+.welcome-text {
+    background: #ffffffcc;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+    line-height: 1.6;
+    text-align: justify;
+}
+
+/* ---------------- Buttons ---------------- */
+.btn {
+    border-radius: 10px;
+    padding: 12px 25px;
+    font-size: 1.1rem;
+    margin: 5px;
+    transition: 0.3s;
+}
+
+.btn-primary {
+    background-color: #1e3d59;
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background-color: #f76c6c;
+    color: #fff;
+}
+
+.btn-secondary {
+    background-color: #f76c6c;
+    color: #fff;
+}
+
+.btn-secondary:hover {
+    background-color: #1e3d59;
+    color: #fff;
+}
+
+.btn-danger {
+    background-color: #d32f2f;
+    color: #fff;
+}
+
+.btn-danger:hover {
+    background-color: #9a0000;
+    color: #fff;
+}
+
+.btn-info {
+    background-color: #0288d1;
+    color: #fff;
+}
+
+.btn-info:hover {
+    background-color: #026fa1;
+}
+
+/* ---------------- Form Elements ---------------- */
+form input, form textarea, form select {
+    border-radius: 8px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    width: 100%;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+}
+
+form label {
+    font-weight: bold;
+}
+
+/* ---------------- Map ---------------- */
+#map, #issuesMap, #adminMap {
+    height: 400px;
+    margin-bottom: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* ---------------- Tables ---------------- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: #ffffffcc;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: #1e3d59;
+    color: #fff;
+}
+
+td img {
+    max-width: 100px;
+    border-radius: 8px;
+}
+
+/* ---------------- Success Message ---------------- */
+.success-msg {
+    margin: 20px 0;
+    padding: 15px;
+    border-radius: 10px;
+    background: #d4edda;
+    color: #155724;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* ---------------- Navigation Buttons ---------------- */
+.btn-nav {
+    margin: 5px;
+}
+
+/* ---------------- Responsive ---------------- */
+@media only screen and (max-width: 768px) {
+    h1 {
+        font-size: 2rem;
+    }
+    .btn {
+        font-size: 1rem;
+        padding: 10px 20px;
+    }
+    #map, #issuesMap, #adminMap {
+        height: 300px;
+    }
+    .welcome-text {
+        padding: 15px;
+    }
+}

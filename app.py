@@ -22,7 +22,6 @@ DB_NAME = "civic_issues.db"
 def init_db():
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
-    # Create table if not exists
     c.execute('''
         CREATE TABLE IF NOT EXISTS issues (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -37,9 +36,14 @@ def init_db():
     conn.close()
 
 # ----------------- Routes -----------------
-# Citizen View (Home)
-@app.route("/", methods=["GET","POST"])
-def index():
+
+@app.route("/")
+def welcome():
+    return render_template("welcome.html")
+
+@app.route("/report", methods=["GET","POST"])
+def report():
+    submitted = False
     if request.method == "POST":
         title = request.form.get("title")
         description = request.form.get("description")
@@ -59,20 +63,20 @@ def index():
                   (title, description, location, photo_filename))
         conn.commit()
         conn.close()
+        submitted = True
 
-        return redirect(url_for("index"))
+    return render_template("report.html", submitted=submitted)
 
-    # Fetch all issues
+@app.route("/issues_map")
+def issues_map():
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
     c.execute("SELECT * FROM issues")
     rows = c.fetchall()
     issues = [{"id": r[0], "title": r[1], "description": r[2], "location": r[3], "photo": r[4], "status": r[5]} for r in rows]
     conn.close()
+    return render_template("issues_map.html", issues=issues)
 
-    return render_template("index.html", issues=issues, user=session.get("user"))
-
-# Admin Login
 @app.route("/login", methods=["GET","POST"])
 def login():
     error = None
@@ -86,7 +90,6 @@ def login():
             error = "Invalid credentials"
     return render_template("login.html", error=error)
 
-# Admin Dashboard
 @app.route("/admin")
 def admin_dashboard():
     if "user" not in session:
@@ -98,10 +101,8 @@ def admin_dashboard():
     rows = c.fetchall()
     issues = [{"id": r[0], "title": r[1], "description": r[2], "location": r[3], "photo": r[4], "status": r[5]} for r in rows]
     conn.close()
-
     return render_template("admin.html", issues=issues)
 
-# Mark Issue as Resolved
 @app.route("/resolve/<int:issue_id>")
 def resolve(issue_id):
     if "user" not in session:
@@ -112,14 +113,12 @@ def resolve(issue_id):
     c.execute("UPDATE issues SET status='Resolved' WHERE id=?", (issue_id,))
     conn.commit()
     conn.close()
-
     return redirect(url_for("admin_dashboard"))
 
-# Admin Logout
 @app.route("/logout")
 def logout():
     session.pop("user", None)
-    return redirect(url_for("index"))
+    return redirect(url_for("welcome"))
 
 # ----------------- Run App -----------------
 if __name__ == "__main__":

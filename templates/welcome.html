@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Welcome to CivicsIssueWeb</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            background: linear-gradient(to right, #f2f6f8, #e0f7fa);
+        }
+        .welcome-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+        .welcome-container h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #1e3d59;
+            margin-bottom: 20px;
+        }
+        .welcome-container h1 span {
+            color: #f76c6c;
+        }
+        .welcome-text {
+            max-width: 800px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            background: #ffffffcc;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .btn-options a {
+            margin: 10px;
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+        .btn-primary:hover { background-color: #f76c6c; }
+        .btn-secondary:hover { background-color: #1e3d59; color: #fff; }
+        .btn-danger:hover { background-color: #d32f2f; }
+    </style>
+</head>
+<body>
+
+<div class="welcome-container">
+    <h1>👋 Hello, Welcome to <span>CivicsIssueWeb</span>!</h1>
+
+    <div class="welcome-text">
+        🏘️ This is your one-stop platform to help improve your community! Here, you can report civic issues like <b>potholes 🕳️</b>, <b>broken streetlights 💡</b>, overflowing garbage 🗑️, or any other problems affecting your neighborhood.  
+        🗺️ Pin the exact location on the interactive map and even upload a photo 📸 to make your report clear.  
+        👨‍👩‍👧‍👦 By reporting issues, you help local authorities act faster and make your city safer and cleaner for everyone.  
+        ✅ All reports are tracked until resolved, so you can see the impact of your contribution.  
+        Let’s work together to create a better, well-maintained, and safe community. Every small report counts! 💪
+    </div>
+
+    <div class="btn-options">
+        <a href="{{ url_for('report') }}" class="btn btn-primary">📝 Report an Issue</a>
+        <a href="{{ url_for('issues_map') }}" class="btn btn-secondary">🗺️ View Issues on Map</a>
+        <a href="{{ url_for('login') }}" class="btn btn-danger">🔑 Admin Login</a>
+    </div>
+</div>
+
+</body>
+</html>
