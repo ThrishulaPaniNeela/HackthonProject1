@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All Issues</title>
+</head>
+<body>
+    <h1>List of Reported Civic Issues</h1>
+    <a href="/">Submit New Issue</a>
+    <ul>
+        {% for issue in issues %}
+            <li>
+                <strong>{{ issue.title }}</strong><br>
+                {{ issue.description }}
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

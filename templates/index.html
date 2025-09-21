@@ -2,70 +2,121 @@
 <html>
 <head>
     <title>Civic Issue Reporting</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+
+    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <style>
+        #map { height: 400px; }
+    </style>
 </head>
-<body>
-    <h1>Report an Issue</h1>
-    <form method="POST">
-        Title: <input type="text" name="title" required><br><br>
-        Description: <textarea name="description" required></textarea><br><br>
-        Location (lat,lng): <input type="text" name="location" id="location" required><br><br>
-        <div id="map" style="width:600px; height:400px;"></div><br>
-        <input type="submit" value="Submit">
-    </form>
+<body class="bg-light">
 
-    {% if user.is_authenticated %}
-    <a href="/logout">Logout</a>
-{% else %}
-    <a href="/login">Admin Login</a>
-{% endif %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Civic Issue Reporting</h1>
 
-<h2>All Reported Issues</h2>
-<ul>
-    {% for issue in issues %}
-        <li>
-            <b>{{ issue.title }}</b> - {{ issue.description }}
-            <br>📍 Location: {{ issue.location }}
-            <br>Status: {{ issue.status }}
-            {% if user.is_authenticated and issue.status == "Pending" %}
-                | <a href="/resolve/{{ issue.id }}">Mark as Resolved</a>
-            {% endif %}
-        </li>
-    {% endfor %}
-</ul>
+    <!-- Report Form -->
+    <div class="card p-4 mb-4 shadow">
+        <h4>Report a New Issue</h4>
+        <form method="POST">
+            <div class="mb-3">
+                <label class="form-label">Title</label>
+                <input type="text" name="title" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea name="description" class="form-control" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Location (Click on map)</label>
+                <input type="text" id="location" name="location" class="form-control" readonly required>
+            </div>
 
-    <!-- <h2>All Reported Issues</h2>
-    <ul>
-        {% for issue in issues %}
-            <li>
-                <b>{{ issue.title }}</b> - {{ issue.description }}
-                <br>📍 Location: {{ issue.location }}
-                <br>Status: {{ issue.status }}
-                {% if issue.status == "Pending" %}
-                    | <a href="/resolve/{{ issue.id }}">Mark as Resolved</a>
-                {% endif %}
-            </li>
-        {% endfor %}
-    </ul> -->
+            <!-- Map -->
+            <div id="map" class="mb-3"></div>
 
-    <script>
-        // Initialize map
-        var map = L.map('map').setView([20.5937, 78.9629], 5); // Center on India
+            <button type="submit" class="btn btn-primary">Submit Issue</button>
+        </form>
+    </div>
 
-        // Add OpenStreetMap tiles
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-        }).addTo(map);
+    <!-- Issues List -->
+    <div class="card p-4 shadow">
+        <h4>All Reported Issues</h4>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for issue in issues %}
+                <tr>
+                    <td>{{ issue.id }}</td>
+                    <td>{{ issue.title }}</td>
+                    <td>{{ issue.description }}</td>
+                    <td>{{ issue.location }}</td>
+                    <td>
+                        {% if issue.status == "Resolved" %}
+                            <span class="badge bg-success">Resolved</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark">Pending</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-        // Add draggable marker
-        var marker = L.marker([20.5937, 78.9629], {draggable:true}).addTo(map);
+    <!-- Bottom buttons -->
+    <div class="text-center mt-4">
+        {% if user.is_authenticated %}
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">Go to Admin Dashboard</a>
+            <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
+        {% else %}
+            <a href="{{ url_for('login') }}" class="btn btn-dark">Admin Login</a>
+        {% endif %}
+    </div>
+</div>
 
-        marker.on('dragend', function (e) {
-            var lat = marker.getLatLng().lat.toFixed(5);
-            var lng = marker.getLatLng().lng.toFixed(5);
-            document.getElementById('location').value = lat + "," + lng;
-        });
-    </script>
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+    // Initialize map (Jharkhand center)
+    var map = L.map('map').setView([23.6102, 85.2799], 12);
+
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    var marker;
+
+    // Handle map click event
+    map.on('click', function(e) {
+        var lat = e.latlng.lat.toFixed(6);
+        var lng = e.latlng.lng.toFixed(6);
+        var latlngStr = lat + ", " + lng;
+
+        // Fill the location input
+        document.getElementById("location").value = latlngStr;
+
+        // Remove old marker if exists
+        if (marker) {
+            map.removeLayer(marker);
+        }
+
+        // Place new marker
+        marker = L.marker([lat, lng]).addTo(map)
+            .bindPopup("Selected Location: " + latlngStr).openPopup();
+    });
+</script>
+
 </body>
 </html>
