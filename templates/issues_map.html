@@ -14,7 +14,7 @@
 </head>
 <body>
 <div class="container">
-    <h1 class="text-center">🗺️ All Reported Issues</h1>
+    <h1 class="text-center">🗺️ Confirmed Civic Issues</h1>
 
     <!-- Navigation -->
     <div class="text-center my-3">
@@ -36,15 +36,18 @@
 
     var issues = {{ issues|tojson }};
     issues.forEach(function(issue){
-        if(issue.location){
-            var coords = issue.location.split(",");
-            if(coords.length==2){
-                var lat = parseFloat(coords[0]);
-                var lng = parseFloat(coords[1]);
-                if(!isNaN(lat) && !isNaN(lng)){
-                    var popup = "<b>"+issue.title+"</b><br>"+issue.description+"<br>Status: "+issue.status;
-                    if(issue.photo){ popup += "<br><img src='/static/uploads/"+issue.photo+"' width='100'>"; }
-                    L.marker([lat,lng]).addTo(map).bindPopup(popup);
+        // Only show confirmed and pending issues for citizens
+        if(issue.status === 'Pending' || issue.status === 'Confirmed'){
+            if(issue.location){
+                var coords = issue.location.split(",");
+                if(coords.length==2){
+                    var lat = parseFloat(coords[0]);
+                    var lng = parseFloat(coords[1]);
+                    if(!isNaN(lat) && !isNaN(lng)){
+                        var popup = "<b>"+issue.title+"</b><br>"+issue.description+"<br>Status: "+issue.status;
+                        if(issue.photo){ popup += "<br><img src='/static/uploads/"+issue.photo+"' width='100'>"; }
+                        L.marker([lat,lng]).addTo(map).bindPopup(popup);
+                    }
                 }
             }
         }

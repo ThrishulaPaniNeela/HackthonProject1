@@ -54,15 +54,19 @@
                     {% else %} - {% endif %}
                 </td>
                 <td>
-                    {% if issue.status == 'Pending' %}
-                        <span class="badge bg-warning text-dark">Pending</span>
-                    {% else %}
+                    {% if issue.status == 'Not Confirmed' %}
+                        <span class="badge bg-warning text-dark">Not Confirmed</span>
+                    {% elif issue.status == 'Pending' %}
+                        <span class="badge bg-primary text-light">Confirmed</span>
+                    {% elif issue.status == 'Resolved' %}
                         <span class="badge bg-success">Resolved</span>
                     {% endif %}
                 </td>
                 <td>
-                    {% if issue.status == 'Pending' %}
-                        <a href="{{ url_for('resolve', issue_id=issue.id) }}" class="btn btn-success btn-sm">✅ Resolve</a>
+                    {% if issue.status == 'Not Confirmed' %}
+                        <a href="{{ url_for('confirm', issue_id=issue.id) }}" class="btn btn-info btn-sm">✅ Confirm</a>
+                    {% elif issue.status == 'Pending' %}
+                        <a href="{{ url_for('resolve', issue_id=issue.id) }}" class="btn btn-success btn-sm">Resolve</a>
                     {% else %}
                         <button class="btn btn-secondary btn-sm" disabled>Resolved</button>
                     {% endif %}

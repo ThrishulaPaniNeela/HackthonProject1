@@ -22,6 +22,7 @@ DB_NAME = "civic_issues.db"
 def init_db():
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
+    # Updated table: status default is 'Not Confirmed'
     c.execute('''
         CREATE TABLE IF NOT EXISTS issues (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -29,7 +30,7 @@ def init_db():
             description TEXT NOT NULL,
             location TEXT NOT NULL,
             photo TEXT,
-            status TEXT DEFAULT "Pending"
+            status TEXT DEFAULT "Not Confirmed"
         )
     ''')
     conn.commit()
@@ -56,7 +57,7 @@ def report():
             photo_filename = secure_filename(photo_file.filename)
             photo_file.save(os.path.join(app.config["UPLOAD_FOLDER"], photo_filename))
 
-        # Save issue to DB
+        # Save issue to DB with default status 'Not Confirmed'
         conn = sqlite3.connect(DB_NAME)
         c = conn.cursor()
         c.execute("INSERT INTO issues (title, description, location, photo) VALUES (?, ?, ?, ?)",
@@ -71,7 +72,8 @@ def report():
 def issues_map():
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
-    c.execute("SELECT * FROM issues")
+    # Citizen sees only confirmed or pending issues
+    c.execute("SELECT * FROM issues WHERE status != 'Not Confirmed'")
     rows = c.fetchall()
     issues = [{"id": r[0], "title": r[1], "description": r[2], "location": r[3], "photo": r[4], "status": r[5]} for r in rows]
     conn.close()
@@ -102,6 +104,18 @@ def admin_dashboard():
     issues = [{"id": r[0], "title": r[1], "description": r[2], "location": r[3], "photo": r[4], "status": r[5]} for r in rows]
     conn.close()
     return render_template("admin.html", issues=issues)
+
+@app.route("/confirm/<int:issue_id>")
+def confirm(issue_id):
+    if "user" not in session:
+        return redirect(url_for("login"))
+
+    conn = sqlite3.connect(DB_NAME)
+    c = conn.cursor()
+    c.execute("UPDATE issues SET status='Pending' WHERE id=?", (issue_id,))
+    conn.commit()
+    conn.close()
+    return redirect(url_for("admin_dashboard"))
 
 @app.route("/resolve/<int:issue_id>")
 def resolve(issue_id):
